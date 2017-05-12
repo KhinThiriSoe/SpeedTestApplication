@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -29,8 +28,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout linearLayout;
     @BindView(R.id.tv_show_speed)
     TextView tvShowSpeed;
-    @BindView(R.id.tv_average_show_speed)
-    TextView tvAverageShowSpeed;
+    @BindView(R.id.tv_show)
+    TextView tvShow;
+    @BindView(R.id.btn_show)
+    Button btnShow;
 
     Date date;
 
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         date = new Date();
 
+        btnShow.setOnClickListener(this);
         btnShowSpeed.setOnClickListener(this);
         btnTest.setOnClickListener(this);
         tvDate.setOnClickListener(this);
@@ -58,14 +60,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnTest:
                 BenchMark.hourly();
                 linearLayout.setVisibility(View.VISIBLE);
+                btnShow.setVisibility(View.VISIBLE);
                 break;
             case R.id.btnShowSpeed:
-                if (TextUtils.isEmpty(tvDate.getText().toString())) {
-                    searchSpeed();
-                } else {
-                    searchSpeedByDate(date);
-                }
+                searchSpeedByDate(date);
                 break;
+            case R.id.btn_show:
+                speed();
             default:
                 break;
         }
@@ -73,20 +74,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void searchSpeedByDate(Date date) {
         StringBuilder speedByDate = new StringBuilder();
-        speedByDate.append("Download speed is " + BenchMark.downloadAverage(date) + "\n");
+        speedByDate.append("Download average speed is " + BenchMark.downloadAverage(date) + "\n");
         speedByDate.append("Upload speed is " + BenchMark.uploadAverage(date) + "\n");
         speedByDate.append("Ping is " + BenchMark.pingAverage(date));
 
         tvShowSpeed.setText(speedByDate);
     }
 
-    private void searchSpeed() {
+    private void speed() {
         StringBuilder speed = new StringBuilder();
-        speed.append("Download average speed is " + BenchMark.downloadAverage() + "\n");
-        speed.append("Upload average speed is " + BenchMark.uploadAverage() + "\n");
-        speed.append("Ping average is " + BenchMark.pingAverage());
+        speed.append("Download speed is " + BenchMark.download() + "\n");
+        speed.append("Upload speed is " + BenchMark.upload() + "\n");
+        speed.append("Ping is " + BenchMark.ping());
 
-        tvAverageShowSpeed.setText(speed);
+        tvShow.setText(speed);
     }
 
     @Override

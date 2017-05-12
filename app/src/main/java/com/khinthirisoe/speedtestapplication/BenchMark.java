@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,7 +17,6 @@ import java.util.TimerTask;
 
 public class BenchMark {
 
-    public static int count = 0;
     static JSONObject obj = new JSONObject();
     static JSONObject root = new JSONObject();
     static JSONArray array = new JSONArray();
@@ -30,19 +30,13 @@ public class BenchMark {
             @Override
             public void run() {
 
-                float download = SpeedTest.downloadSpeed();
-                float upload = SpeedTest.uploadSpeed();
-                float ping = SpeedTest.ping();
-                long dateMillionSecond = System.currentTimeMillis();
-
                 try {
-                    obj.put(PrefUtils.KEY_DOWNLOAD, download);
-                    obj.put(PrefUtils.KEY_UPLOAD, upload);
-                    obj.put(PrefUtils.KEY_PING, ping);
-                    obj.put(PrefUtils.KEY_DATE, dateMillionSecond);
+                    obj.put(PrefUtils.KEY_DOWNLOAD, SpeedTest.downloadSpeed());
+                    obj.put(PrefUtils.KEY_UPLOAD, SpeedTest.uploadSpeed());
+                    obj.put(PrefUtils.KEY_PING, SpeedTest.ping());
+                    obj.put(PrefUtils.KEY_DATE, System.currentTimeMillis());
                     array.put(obj);
                     root.put("speeds", array);
-                    count++;
 
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
@@ -64,14 +58,14 @@ public class BenchMark {
                 Date dJson = new Date(d);
 
                 if (dateFormat.format(date).equals(dateFormat.format(dJson))) {
-                    return download;
+                    return download / array.length();
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return download;
+        return download / array.length();
     }
 
     public static float uploadAverage(Date date) {
@@ -86,14 +80,14 @@ public class BenchMark {
                 Date dJson = new Date(d);
 
                 if (dateFormat.format(date).equals(dateFormat.format(dJson))) {
-                    return upload;
+                    return upload / array.length();
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return upload;
+        return upload / array.length();
     }
 
     public static float pingAverage(Date date) {
@@ -108,53 +102,8 @@ public class BenchMark {
                 Date dJson = new Date(d);
 
                 if (dateFormat.format(date).equals(dateFormat.format(dJson))) {
-                    return ping;
+                    return ping / array.length();
                 }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return ping;
-    }
-
-    public static float downloadAverage() {
-        try {
-            JSONObject json = new JSONObject(root.toString());
-            JSONArray arr = json.getJSONArray("speeds");
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject obj = arr.optJSONObject(i);
-                download += Float.valueOf(obj.getString(PrefUtils.KEY_DOWNLOAD));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return download / array.length();
-    }
-
-    public static float uploadAverage() {
-        try {
-            JSONObject json = new JSONObject(root.toString());
-            JSONArray arr = json.getJSONArray("speeds");
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject obj = arr.optJSONObject(i);
-                upload += Float.valueOf(obj.getString(PrefUtils.KEY_UPLOAD));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return upload / array.length();
-    }
-
-    public static float pingAverage() {
-        try {
-            JSONObject json = new JSONObject(root.toString());
-            JSONArray arr = json.getJSONArray("speeds");
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject obj = arr.optJSONObject(i);
-                ping += Float.valueOf(obj.getString(PrefUtils.KEY_PING));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -162,4 +111,53 @@ public class BenchMark {
 
         return ping / array.length();
     }
+
+    public static ArrayList<Float> download() {
+        ArrayList<Float> downloadArr = new ArrayList<>();
+        try {
+            JSONObject json = new JSONObject(root.toString());
+            JSONArray arr = json.getJSONArray("speeds");
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject obj = arr.optJSONObject(i);
+                downloadArr.add(Float.valueOf(obj.getString(PrefUtils.KEY_DOWNLOAD)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return downloadArr;
+    }
+
+    public static ArrayList<Float> upload() {
+        ArrayList<Float> uploadArr = new ArrayList<>();
+        try {
+            JSONObject json = new JSONObject(root.toString());
+            JSONArray arr = json.getJSONArray("speeds");
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject obj = arr.optJSONObject(i);
+                uploadArr.add(Float.valueOf(obj.getString(PrefUtils.KEY_UPLOAD)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return uploadArr;
+    }
+
+    public static ArrayList<Float> ping() {
+        ArrayList<Float> pingArr = new ArrayList<>();
+        try {
+            JSONObject json = new JSONObject(root.toString());
+            JSONArray arr = json.getJSONArray("speeds");
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject obj = arr.optJSONObject(i);
+                pingArr.add(Float.valueOf(obj.getString(PrefUtils.KEY_PING)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return pingArr;
+    }
+
+
 }

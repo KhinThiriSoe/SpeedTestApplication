@@ -8,6 +8,7 @@ import java.util.Random;
  */
 
 public class SpeedTest {
+    Random downloadSpeedRandom;
 
     public static float downloadSpeed() {
         Random downloadSpeedRandom = new Random();
